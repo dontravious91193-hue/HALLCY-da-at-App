@@ -1,0 +1,15 @@
+# Node.js
+node_modules/
+npm-debug.log
+
+# C++ Build artifacts
+build/
+*.o
+*.obj
+*.out
+*.exe
+
+# Git/System
+.DS_Store
+__pycache__/
+.env
