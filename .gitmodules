@@ -1,0 +1,6 @@
+[submodule "prisma"]
+	path = prisma
+	url = https://github.com/dontravious91193-hue/prisma.git
+[submodule "PhotoGIMP"]
+	path = PhotoGIMP
+	url = https://github.com/dontravious91193-hue/PhotoGIMP.git
