@@ -1,0 +1,27 @@
+{
+    "project_identity": {
+        "app_context": "Hallcy da'at",
+        "production_phase": "AI Cinematic Opening Sequence",
+        "core_theme": "Cyber-esoteric mysticism, dark high-tech canvas, hidden knowledge grids"
+    },
+    "visual_and_texture_directives": {
+        "art_style": "Premium high-fidelity anime, crisp cel shading, deep ambient shadows",
+        "texture_profiles": [
+            "Gleaming glassmorphism surfaces with subtle chromatic aberration boundaries",
+            "Granular, shimmering light particles drifting over matte black server plates",
+            "Brushed metallic hardware layers reflecting neon teal and crimson signal pulses"
+        ],
+        "color_palette": {
+            "dominant_canvas": "#0b0c10 (Deep Void Black)",
+            "primary_glow": "#45f3ff (Cyber Neon Teal)",
+            "accent_pulse": "#ff2a74 (Energy Crimson)",
+            "text_matrix": "#c5c6c7 (Liquid Slate Silver)"
+        }
+    },
+    "motion_and_kinetics_directives": {
+        "camera_movement": "Slow, cinematic forward dolly tracking with micro-lens refocused pans",
+        "animation_physics": "Fluid kinetic particle flow, smooth volumetric smoke dissipation, rapid data array stream pulses",
+        "transitions": "Light-leak wipes and seamless zoom cuts through abstract digital geometries"
+    },
+    "prompt_injection_template": "Act as the Hallcy AI Creative Director. Generate a frame-by-frame storyboard for the 'Hallcy da'at' AI opening. Adhere strictly to the aesthetic parameters: use texture mapping emphasizing textured glass and brushed metals; apply color arrays of deep void blacks and cyber teal; and execute cinematic micro-focus camera movements."
+}
