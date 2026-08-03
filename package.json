@@ -1,0 +1,33 @@
+{
+  "name": "hallcy_da_at",
+  "version": "1.0.0",
+  "description": "An Open-Source laboratory for modular AI orchestration, knowledge integration, and systemic development.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dontravious91193-hue/HALLCY-da-at-App.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dontravious91193-hue/HALLCY-da-at-App/issues"
+  },
+  "homepage": "https://github.com/dontravious91193-hue/HALLCY-da-at-App#readme",
+  "dependencies": {
+    "@google/genai": "^2.15.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.0"
+  }
+}
