@@ -1,9 +1,11 @@
 import os
 import streamlit as st
 import random
+import json
+import html
 from google import genai
 
-# Initialize Google Client
+# Initialize Google Client — key comes from env only, never hardcoded
 try:
     client = genai.Client()
 except Exception:
@@ -18,15 +20,22 @@ st.markdown("""
     .stButton>button { 
         background: linear-gradient(45deg, #45f3ff, #ff2a74); 
         color: #ffffff; 
-        font-weight: bold; 
+        font-weight: bold;
         border-radius: 8px;
     }
     .card { 
         background: rgba(255, 255, 255, 0.03); 
         padding: 24px; 
-        border-radius: 14px; 
-        border: 1px solid rgba(69, 243, 255, 0.2); 
+        border-radius: 14px;
+        border: 1px solid rgba(69, 243, 255, 0.2);
         margin-bottom: 20px;
+    }
+    .feedback-card {
+        background: rgba(255, 42, 116, 0.05);
+        padding: 16px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 42, 116, 0.25);
+        margin-top: 12px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -35,11 +44,15 @@ st.markdown("""
 if "security_flagged" not in st.session_state:
     st.session_state.security_flagged = False
 
-# Simple real-time detection for common web hacking inputs
+FEEDBACK_FILE = "daat_feedback.jsonl"
+
 def check_malicious_input(user_string):
-    malicious_tokens = ["<script>", "DROP TABLE", "OR 1=1", "exec(", "eval(", "bin/sh", "sudo "]
+    if not user_string:
+        return False
+    malicious_tokens = ["<script>", "DROP TABLE", "OR 1=1", "exec(", "eval(", "bin/sh", "sudo ", "import os", "subprocess", "__import__", "open("]
+    lowered = user_string.lower()
     for token in malicious_tokens:
-        if token.lower() in user_string.lower():
+        if token.lower() in lowered:
             return True
     return False
 
@@ -61,6 +74,7 @@ if not st.session_state.terms_approved:
     1. **Real-Time Learning:** You understand that our AI models learn synchronously from your puzzle-solving patterns and gameplay mechanics.
     2. **Anonymized Data:** No personal identifying data is sold; gameplay telemetry is used purely to optimize the game's educational engine.
     3. **Fair Play:** Automated scripts, macro bots, or hacking vectors are strictly prohibited. Malicious activities trigger automatic real-time flagging.
+    4. **Beta Feedback:** Your feedback helps shape the public beta. Nothing you submit is shared with third parties.
     """)
     
     agree_check = st.checkbox("I verify that I understand these rules and agree to the terms.")
@@ -75,15 +89,14 @@ if not st.session_state.terms_approved:
 
 # --- MAIN APPLICATION NAVIGATION ---
 st.sidebar.title("🪐 Hallcy Da'at Hub")
-st.sidebar.markdown("`v2.0.0 - Gamified AI Sandbox`")
+st.sidebar.markdown("`v2.1.0 - Gamified AI Sandbox`")
 st.sidebar.markdown("---")
-menu = st.sidebar.radio("Navigation Nodes", ["Arcade Dashboard", "Business Sponsorships"])
+menu = st.sidebar.radio("Navigation Nodes", ["Arcade Dashboard", "Business Sponsorships", "📝 Beta Feedback"])
 
 if menu == "Arcade Dashboard":
     st.title("🎮 Hallcy Da'at Learning Arcade")
     st.write("Real-time gamified engines where users and AI learn core logic systems side-by-side.")
     
-    # Top Level Status Cards
     col1, col2, col3 = st.columns(3)
     with col1:
         status_text = "<span style='color:#00ffcc;'>● ONLINE</span>" if os.environ.get("GEMINI_API_KEY") else "<span style='color:#ffaa00;'>○ SANDBOX LOCAL MODE</span>"
@@ -95,8 +108,7 @@ if menu == "Arcade Dashboard":
 
     st.markdown("---")
     
-    # Selector for individual games (completely separate workflows)
-    game_choice = st.selectbox("Select Your Learning Vector:", ["⌨️ Monkeytype Alpha Matrix", "🌱 8-Bit Watering Garden", "🪲 Pattern Debug Hunter"])
+    game_choice = st.selectbox("Select Your Learning Vector:", ["⌨️ Monkeytype Alpha Matrix", "🌱 8-Bit Watering Garden", "🐞 Pattern Debug Hunter"])
     
     if game_choice == "⌨️ Monkeytype Alpha Matrix":
         st.subheader("⌨️ Monkeytype Alpha Matrix: Dexterity & Syntax Racing")
@@ -112,7 +124,6 @@ if menu == "Arcade Dashboard":
                 st.session_state.security_flagged = True
                 st.rerun()
                 
-            # Simulate AI processing and learning mistakes
             ai_mistake_roll = random.random()
             if ai_mistake_roll > 0.75:
                 st.warning("🤖 AI Competitor Response: The AI slipped up! It generated an invalid return bracket structure. You gained a speed multiplier!")
@@ -139,8 +150,8 @@ if menu == "Arcade Dashboard":
                 
             st.success("💧 Water deployed! The 8-bit grid state updated. The AI telemetry engine logged your efficiency optimization strategy.")
 
-    elif game_choice == "🪲 Pattern Debug Hunter":
-        st.subheader("🪲 Pattern Debug Hunter: Syntax & Logic Triage")
+    elif game_choice == "🐞 Pattern Debug Hunter":
+        st.subheader("🐞 Pattern Debug Hunter: Syntax & Logic Triage")
         st.write("Objective: Spot the structural vulnerability or syntax error in real-time. The code blocks morph as you solve them, and the AI tests out various mutation debugging routines right with you.")
         
         faulty_code = "for i in range(10)\n    print('Tracking node index:', i)"
@@ -180,3 +191,49 @@ elif menu == "Business Sponsorships":
                 st.error("Verification Refused: You must provide your company details and at least one social media handle.")
             else:
                 st.success("Application encrypted! Our screening matrix will verify your cross-platform social handles.")
+
+elif menu == "📝 Beta Feedback":
+    st.title("📝 Beta Feedback Terminal")
+    st.write("Your input shapes the next build. Rate the arcade, flag bugs, suggest games. Everything lands in a local log — nothing leaves this machine.")
+
+    with st.form("beta_feedback_form"):
+        player_name = st.text_input("Callsign (optional)", placeholder="Anonymous Pilot")
+        rating = st.slider("Overall beta rating", 1, 5, 3)
+        liked = st.text_area("What worked?", placeholder="The typing game felt fast...")
+        improve = st.text_area("What should improve?", placeholder="More games, smoother UI...")
+        bug = st.text_area("Bugs found", placeholder="None yet — or describe one")
+        submitted = st.form_submit_button("Transmit Feedback")
+
+        if submitted:
+            if check_malicious_input(liked) or check_malicious_input(improve) or check_malicious_input(bug) or check_malicious_input(player_name):
+                st.session_state.security_flagged = True
+                st.rerun()
+            entry = {
+                "ts": __import__("datetime").datetime.utcnow().isoformat() + "Z",
+                "callsign": html.escape(player_name or "Anonymous"),
+                "rating": rating,
+                "liked": html.escape(liked),
+                "improve": html.escape(improve),
+                "bug": html.escape(bug),
+            }
+            with open(FEEDBACK_FILE, "a", encoding="utf-8") as f:
+                f.write(json.dumps(entry) + "\n")
+            st.success("Feedback logged locally. Thank you, pilot.")
+
+    st.markdown("---")
+    st.subheader("Recent Transmissions")
+    if os.path.exists(FEEDBACK_FILE):
+        lines = open(FEEDBACK_FILE, encoding="utf-8").read().strip().splitlines()
+        for line in reversed(lines[-5:]):
+            try:
+                e = json.loads(line)
+                st.markdown(f'''<div class="feedback-card">
+                <b>👤 {e.get("callsign","Anonymous")}</b> · ★{e.get("rating", "?")}/5<br>
+                <i>Liked:</i> {e.get("liked","")}<br>
+                <i>Improve:</i> {e.get("improve","")}<br>
+                <i>Bug:</i> {e.get("bug","")}
+                </div>''', unsafe_allow_html=True)
+            except Exception:
+                pass
+    else:
+        st.info("No feedback yet. Be the first pilot to transmit.")
