@@ -1,8 +1,14 @@
 node_modules/
 .env
-dist/
-.DS_Store
+.env.*
+!.env.example
+.streamlit/secrets.toml
 daat_feedback.jsonl
 __pycache__/
 *.pyc
-.streamlit/secrets.toml
+.DS_Store
+dist/
+build/
+public/prisma/
+public/PhotoGIMP/
+public/autoremesher/
