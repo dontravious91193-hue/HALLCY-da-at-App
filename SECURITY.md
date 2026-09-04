@@ -14,6 +14,13 @@ This repo is the **only public** surface of the Hallcy ecosystem. Everything pro
 - Companion art sheets, Live2D models, or rigging specs
 - Sim kernel, agent brains, or production configs
 - Real player PII — feedback is anonymized by design
+- Vendored upstream projects (Prisma, PhotoGIMP, autoremesher) — these belong in their own repos, not inside this sandbox
+
+## Incident response (leaked secret found)
+1. **Revoke first** — Google Cloud Console → APIs & Services → Credentials; MongoDB Atlas → Database Access. Deleting the file does not stop an attacker who already copied it.
+2. **Remove from history** — `git filter-repo --path public/prisma --invert-paths`, then force-push. Only needed if crawlers may have cached old commits.
+3. **Mark alerts resolved** — Security → Secret scanning → mark each alert Revoked.
+4. **Enable push protection** — Settings → Code security → push protection on. Blocks the next leak before it lands.
 
 ## Hardening checklist (enable in repo Settings → Code security)
 1. **Dependabot alerts** — on (free for public repos)
@@ -23,11 +30,10 @@ This repo is the **only public** surface of the Hallcy ecosystem. Everything pro
 5. **Dependency review** on PRs — on
 
 ## Verified clean (automated audit)
-- 0 known vulnerable dependencies (`@google/genai`, `dotenv`, `express`, `typescript`, `vite`)
-- 0 code-scanning alerts
-- 0 security advisories
-- No hardcoded secrets detected in tracked files
-- `.gitignore` excludes `.env`, `node_modules/`, `dist/`, `daat_feedback.jsonl`
+- Vendored `public/prisma/` and `public/PhotoGIMP/` trees removed from the working tree
+- `.gitignore` now blocks those trees, `.env*`, and the feedback log
+- `app.py` reads `GEMINI_API_KEY` from env only — no hardcoded key
+- Feedback writes to a local file that is gitignored
 
 ## Reporting a vulnerability
 Open a private advisory via **Security → Advisories → Report a vulnerability**, or email the maintainer. Do not file a public issue for security findings.
