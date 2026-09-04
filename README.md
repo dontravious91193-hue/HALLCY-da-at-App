@@ -20,7 +20,7 @@ streamlit run app.py
 ```
 
 ## Security
-See [SECURITY.md](SECURITY.md). Dependency audit: clean. No secrets in git history. Feedback never leaves your machine.
+See [SECURITY.md](SECURITY.md). Dependency audit: clean. No secrets in git history. Feedback never leaves your machine. Vendored upstream trees (Prisma, PhotoGIMP) have been removed — they do not belong inside this sandbox.
 
 ## License
 All Rights Reserved. See [ANTI_SPINOFF.md](ANTI_SPINOFF.md).
